@@ -83,9 +83,52 @@ calculateOutdatedness() {
     done
 }
 
+# Funzione per visualizzare l'usage
+usage() {
+    echo "Usage: $0 [-d] [-p project_path] [-h]"
+    echo "  -d                Enable debug mode"
+    echo "  -p project_path   Specify the project path (default is current directory)"
+    echo "  -h                Show this help message"
+    exit 0
+}
+
 totalScore=0
 scoringPackages=()
 debug=0
+project_path="."
+
+# Parsing degli argomenti
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -d|--debug)
+      debug=1
+      echo "Debug mode enabled"
+      shift # passa all'argomento successivo
+      ;;
+    -p|--path)
+      project_path="$2"
+      shift # passa all'argomento successivo
+      shift # passa al valore successivo
+      ;;
+    -h|--help)
+      usage
+      ;;
+    *)
+      echo "Invalid option: $1" 1>&2
+      usage
+      ;;
+  esac
+done
+
+# se è stata specificata una directory, assicurati che esista
+if [ "$project_path" != "." ] && [ ! -d "$project_path" ]; then
+    echo "Directory not found: $project_path"
+    exit 1
+fi
+if [ "$project_path" != "." ]; then
+    echo "Project path: $project_path"
+fi
+cd "$project_path" || exit
 
 # Controllo per Composer
 if [ -f composer.json ]; then
