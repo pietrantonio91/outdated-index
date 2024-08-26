@@ -107,6 +107,12 @@ fi
 # Controllo per NPM
 if [ -f package.json ]; then
     echo "Installing NPM packages..."
+
+    # se esiste il comando nvm e il file .nvmrc, usa la versione di Node.js specificata
+    if command -v nvm &> /dev/null && [ -f .nvmrc ]; then
+        nvm use
+    fi
+
     if [ "$debug" -eq 1 ]; then
         npm install
     else
