@@ -88,6 +88,7 @@ usage() {
     echo "Usage: $0 [-d] [-p project_path] [-h]"
     echo "  -d                Enable debug mode"
     echo "  -p project_path   Specify the project path (default is current directory)"
+    echo "  -o output_file    Specify the output file"
     echo "  -h                Show this help message"
     exit 0
 }
@@ -96,6 +97,8 @@ totalScore=0
 scoringPackages=()
 debug=0
 project_path="."
+output=0
+output_file=""
 
 # Parsing degli argomenti
 while [[ $# -gt 0 ]]; do
@@ -108,7 +111,14 @@ while [[ $# -gt 0 ]]; do
     -p|--path)
       project_path="$2"
       shift # passa all'argomento successivo
-      shift # passa al valore successivo
+      shift
+      ;;
+    -o|--output)
+      output=1
+      output_file="$2"
+      echo "Output file: $output_file"
+      shift
+      shift
       ;;
     -h|--help)
       usage
@@ -172,6 +182,17 @@ fi
 
 # count total packages by scoring packages
 totalPackages=${#scoringPackages[@]}
+
+# if output file is specified, write the output to the file
+if [ "$output" -eq 1 ]; then
+    echo "Writing output to $output_file"
+    echo "Outdated Index:$totalScore" > "$output_file"
+    echo "Total packages:$totalPackages" >> "$output_file"
+    echo "Scoring packages:" >> "$output_file"
+    for package in "${scoringPackages[@]}"; do
+        echo "$package" >> "$output_file"
+    done
+fi
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
